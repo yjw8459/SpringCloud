@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: userService
+    name: eurekaClient
 eureka:
   client:
     register-with-eureka: true
