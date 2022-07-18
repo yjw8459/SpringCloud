@@ -1,0 +1,60 @@
+SCG :
+    API Gateway를 수행하는 Spring Cloud의 공식 프로젝트
+    Netflix Zuul 과 같은 기능을 수행하지만 비동기 수행을 위해 Spring WebFlux로 Netty 위에서 동작하는
+    Spring boot application이다.
+    다양한 마이크로서비스들을 Gateway에 연결시켜 모든 서비스들의 진입점으로 만들 수 있고 Gateway 내에서
+    HTTP 요청에 대한 다양한 조작을 할 수 있다.
+
+    SCG의 핵심 3가지
+        1. Routes
+        2. Predicates
+        3. Filters
+
+    Spring Cloud Gateway로 요청이 들어오면 Gateway Handler Mapping이 동작한다.
+    Gateway Handler Mapping 에서는 내부에 Predicates(조건)이 맞다면 Filter들을 거치게 하고 Route한다.
+
+    Gateway Handler Mapping
+        내부에 Predicates(조건)이 맞을 경우 Filter들을 거치게 하고 Route한다.
+
+    SCG는 HandlerMapping에서 Predicate가 일치할 때만 라우팅을 수행한다.
+
+    SCG의 built-in Predicate Factory
+        - After
+        - Cookie
+        - Method
+        - Path
+
+    After & Before & Between은 시간과 관련된 Predicates를 제공.
+     - After : 특정시간 이후
+     - Before : 특정 시간 이전
+     - Between : 특정 시간 사이
+    ex ) 대학 수강신청 같은 기간에 따른 서비스가 있을 경우 서비스에서 막는 것이 아닌, API Gateway에서 원천적으로 서비스 접근을 막을 수 있음.
+
+    SCG의 built-in GatewayFilter Factory
+     - AddRequestHeader, AddResponseHeader
+     - AddRequestParameter
+     - RewritePath
+    인증과 인가 커버가능
+
+    Custom Filter
+        MicroService에서 인증은 Stateless한 방식을 적용하는 것이 불가피
+        그렇지 않은 경우, Session-Cookie 기반 인증을 사용하게 된다면, 모든 서버가
+        하나의 DB를 바라보고 사용자의 Session과 Cookie를 관리하거나, 모든 서버에서
+        Session을 별도로 관리해야함.
+        Gateway에서 인증을 거치면 위와 같은 문제를 해결할 수 있음.
+        각각의 서버에 인증할 필요 없이 Gateway에서 한 번만 인증을 수행하고, 다른 서버들은
+        요청이 오면 인증된 요청이라 판단하여 응답
+
+        SCG Authentication
+            1. 사용자 요청
+            2. Handler Mapping 이 Predicates 검사
+            3. Pre Filter에서 Request Header에 있는 token 파싱
+            4. 존재하지 않는다면, 401 Error Reject
+            5. 존재하면 사용자가 요청한 서버로 요청 전달
+
+참조 : https://wonit.tistory.com/500?category=854728
+
+
+
+
+

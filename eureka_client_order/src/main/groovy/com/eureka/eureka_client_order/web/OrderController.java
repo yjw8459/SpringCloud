@@ -4,16 +4,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 public class OrderController {
 
-    @GetMapping("/order")
-    public ModelAndView user(){
-        log.info("Request Order !!");
-        return new ModelAndView();
+    @GetMapping("/info")
+    public String info(){
+        log.info("Request Order Info !!");
+        return "Request Order Info!!";
+    }
+
+    @GetMapping("/auth")
+    public String auth(){
+        log.info("Request Order Auth!!");
+        return "Request Order Auth!!";
     }
 }

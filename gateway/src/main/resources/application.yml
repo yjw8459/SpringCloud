@@ -3,30 +3,60 @@ server:
 
 eureka:
   client:
-    fetch-registry: true  # ??? ????? ???
-    register-with-eureka: true  # ??? ????? ???
+    fetch-registry: true  # 유레카 클라이언트 활성화
+    register-with-eureka: true  # 유레카 클라이언트 활성화
     service-url:
-      defaultZone: http://localhost:8761/eureka # ??? ?????? ??
+      defaultZone: http://localhost:8761/eureka # 유레카 클라이언트로 등록
 
 spring:
   application:
     name: gateway
   cloud:
     gateway:
-      routes: # ???? ?? ??
-        - id: user-service  # ?? ???? ??? ???? ??? ? ???? ?? ??
+      routes: # 라우팅에 대한 정보
+        # 날짜
+        - id: user-service # 해당 라우팅이 어떠한 이름으로 라우팅 될 것인지에 대한 이름
+          # 포워딩할 주소, http://localhost:8000/user 로 들어오면 http://eurekaClientUser 로 포워딩
+          uri: lb://eurekaClientUser  # 현재 라우팅을 어디에 포워딩 시킬 것인지를 명시해준다.
 
-          # ?? ???? ??? ??? ?? ???? ??
-          uri: http://localhost:8080 # ???? ??, http://localhost:8000/user ? ???? http://localhost:0 ? ???
-
-          # ????? ?? ??? predicates? ?? ???? ???? route? ??? ?? ??
+          # 조건식으로 특정 요청이 predicates에 맞는 조건으로 들어오면 해당 route를 수행할 것을 지정한다.
           predicates:
-            - Path=/user/** # ?? gateway ??? /user/**? ???? ?? user-service? ?????? ??
+          - Path=/user/date/**
+          - After=2017-01-20T17:42:47.789-07:00
 
+        # 쿠키
+        - id: user-service
+          uri: lb://eurekaClientUser
+          predicates:
+            - Path=/user/cookie/**
+            - Cookie=valid, kakao
+
+        # 메서드
+        - id: user-service
+          uri: lb://eurekaClientUser
+          predicates:
+            - Path=/user/method/**
+            - Method=GET,POST
+
+        # AddRequestHeader, AddResponseHeader
+        - id: user-service
+          # 현재 라우팅을 어디에 포워딩 시킬 것인지를 명시해준다.
+          uri: lb://eurekaClientUser
+          predicates:
+            - Path=/user/add # 해당 gateway 서버의 /user/**로 들어오는 요은 user-service로 인식하겠다는 조건
+          filters:
+            - AddRequestHeader=token, 123456
+            - AddResponseHeader=authenticated, yes
+
+        # RewritePath
         - id: order-service
-          uri: http://localhost:8081 # ??? ? ??, http://localhost:8000/order ? ???? http://localhost:1 ? ???
+          uri: http://localhost:8081
           predicates:
-            - Path=/order/** # ?? gateway ??? /order/**? ???? ?? order-service? ?????? ??
-
-# localhost:8000/user/info -> localhost:0/user/info
-# localhost:8000/order/info -> localhost:1/order/info
+            - Path=/order/**
+          filters:
+            #prefix /order 생략 /order/info -> orderService의 /info
+            - RewritePath=/order/?(?<segment>.*), /$\{segment}
+            - CustomAuthFilter
+            - CustomPostFilter
+# localhost:8000/user/info -> localhost:8080/user/info
+# localhost:8000/order/info -> localhost:8081/order/info
