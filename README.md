@@ -1,3 +1,4 @@
-# eureka
+# Spring Cloud 
 
-MSA Spring Cloud Discovery 
+ - Netflix Eureka
+ - SCG(Spring Cloud Gateway)
