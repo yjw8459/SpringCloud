@@ -22,47 +22,46 @@ import java.util.Objects;
  */
 @Component
 @Slf4j
-public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFilter.Config> {
+public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFilter.AuthConfig> {
 
     public CustomAuthFilter(){
-        super(Config.class);
+        super(AuthConfig.class);
     }
 
     // 사용자 로직 작성
     @Override
-    public GatewayFilter apply(Config config){
-        // 첫 번째 매개변수(exchange)는 ServerWebExchange 형태,
-        // 두 번째 매개변수(chain)는 GatewayFilterChain 람다 함수
-        // exchange : ServletRequest, Response X, Spring Reactive Request,Response O
+    public GatewayFilter apply(AuthConfig config){
         return (((exchange, chain) -> {
-            // exchange.getRequest();    Pre Filter
-            // exchange.getResponse();   Post Filter
-            //ServerHttpRequest request = exchange.getRequest();  // Spring Reactive Request
-            log.info("preFilter");
-            ServerHttpResponse response = exchange.getResponse();
+            ServerHttpRequest request = exchange.getRequest();
+            log.error("Auth PreFilter");
+
             // Request Header에 token이 존재하지 않을 때
-            if ( ! response.getHeaders().containsKey("token") ){
+            if ( ! request.getHeaders().containsKey("token") ){
                 return handleUnAuthorized(exchange);
             }
             // Request Header에서 token을 가져옴
-            List<String> token = response.getHeaders().get("token");
+            List<String> token = request.getHeaders().get("token");
             String tokenString = Objects.requireNonNull(token).get(0);
+
             // 토큰 검증
             if ( ! tokenString.equals("A.B.C") ){
                 return handleUnAuthorized(exchange);    // 토큰이 일치하지 않을 때
             }
-
-            return chain.filter(exchange);  // 토큰이 일치할 때
+            // 토큰이 일치할 때
+            return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+                log.info("Success Post Logging");
+            }));
         }));
     }
 
     private Mono<Void> handleUnAuthorized(ServerWebExchange exchange){
         ServerHttpResponse response = exchange.getResponse();
+        log.error("Auth 401 UNAUTHORIZED Error");
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return response.setComplete();
     }
 
-    public static class Config{
+    public static class AuthConfig{
 
     }
 }

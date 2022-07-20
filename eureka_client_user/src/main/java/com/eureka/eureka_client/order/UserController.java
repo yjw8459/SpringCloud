@@ -37,4 +37,9 @@ public class UserController {
         return " AddRequest&Response Header  !! ";
     }
 
+    @GetMapping("/eurekaClientUser")
+    public String eurekaClientUser(){
+        return "http://localhost:8000/eurekaClientUser";
+    }
+
 }
