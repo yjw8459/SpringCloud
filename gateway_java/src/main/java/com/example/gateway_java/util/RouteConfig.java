@@ -7,5 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class RouteConfig {
 
     @Bean
-    public RouteLoca
+    public void test(){
+
+    }
 }
