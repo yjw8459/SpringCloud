@@ -1,4 +1,4 @@
-package com.eureka.eureka_client.order;
+package com.eureka.eureka_client.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,9 +37,9 @@ public class UserController {
         return " AddRequest&Response Header  !! ";
     }
 
-    @GetMapping("/eurekaClientUser")
+    @GetMapping("/user/java")
     public String eurekaClientUser(){
-        return "http://localhost:8000/eurekaClientUser";
+        return "Java Config !!!";
     }
 
 }

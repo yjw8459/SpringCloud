@@ -1,8 +1,12 @@
+spring:
+  application:
+    name:gateway-java
+
 server:
   port: 8001
 eureka:
   client:
-    fetch-registry: true  # ??? ????? ???
-    register-with-eureka: true  # ??? ????? ???
+    fetch-registry: true
+    register-with-eureka: true
     service-url:
-      defaultZone: http://localhost:8761/eureka # ??? ?????? ??
+      defaultZone: http://localhost:8761/eureka

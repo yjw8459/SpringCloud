@@ -13,15 +13,19 @@ spring:
     name: gateway
   cloud:
     gateway:
-      routes: # 라우팅에 대한 정보
+      default-filters:
+        - name: DefaultFilter
+          args:
+            baseMessage: Spring Cloud Gateway GlobalFilter
+            preLogger: true
+            postLogger: true
+      routes:
         # 날짜
-        - id: user-date # 해당 라우팅이 어떠한 이름으로 라우팅 될 것인지에 대한 이름
-          # 포워딩할 주소, http://localhost:8000/user 로 들어오면 http://eurekaClientUser 로 포워딩
-          uri: lb://eurekaClientUser  # 현재 라우팅을 어디에 포워딩 시킬 것인지를 명시해준다.
-
-          # 조건식으로 특정 요청이 predicates에 맞는 조건으로 들어오면 해당 route를 수행할 것을 지정한다.
+        - id: user-date
+          uri: lb://eurekaClientUser
           predicates:
           - Path=/user/date/**
+          - Before=2022-07-23T17:42:47.789-07:00
           - After=2017-01-20T17:42:47.789-07:00
 
         # 쿠키
@@ -38,30 +42,19 @@ spring:
             - Path=/user/method/**
             - Method=GET,POST
 
-        # AddRequestHeader, AddResponseHeader
         - id: user-add
-          # 현재 라우팅을 어디에 포워딩 시킬 것인지를 명시해준다.
           uri: lb://eurekaClientUser
           predicates:
-          - Path=/user/add # 해당 gateway 서버의 /user/**로 들어오는 요은 user-service로 인식하겠다는 조건
+          - Path=/user/add
           filters:
           - AddRequestHeader=token, 123456
           - AddResponseHeader=authenticated, yes
 
-#        - id: user-service
-#          uri: lb//eurekaClientUser
-#          predicates:
-#            - Path=/user/**
-#          filters:
-#          - CustomLoggingFilter
-
-        # RewritePath
         - id: order-rewrite
           uri: http://localhost:8081
           predicates:
             - Path=/order/**
           filters:
-            #prefix /order 생략 /order/info -> orderService의 /info
             - RewritePath=/order/?(?<segment>.*), /$\{segment}
             - CustomAuthFilter
 

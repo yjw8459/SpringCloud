@@ -56,5 +56,20 @@ SCG :
 
 
 
+ Gateway Pattern
 
+ Circuit Breaker Pattern(회로 차단기 패턴)
+  - CLOSED: 정상 상태
+  - OPEN: 오류 상태
+  - HALF_OPEN: 오류 상태에서 정상 상태 여부를 판단하기 위한 반 열림 상태
+
+  상태 결정 요인
+   1. 다른 서비스로의 요청 발생
+   2. 요청이 정상적으로 수행되면 상태를 CLOSED로 세팅
+   3. 이후 요청이 실패 시 상태를 OPEN으로 세팅
+   4. 로직에서 해당 요청이 필요한 경우 상태가 OPEN 상태이면 스킵
+   5. 설정된 시간이 지나면 상태를 OPEN에서 HALF_OPEN으로 변경
+   6. 상태가 HALF_OPEN일 때, 설정된 개수만큼의 요청 허용
+   7. 이후 요청이 성공했을 경우 상태를 CLOSED로 변경
+   Circuit Breaker Pattern: https://logical-code.tistory.com/172#%EC%--%--%ED%--%-C%--%EA%B-%--%EA%B-%BC%--%EC%--%--%ED%--%-C%--%EA%B-%--%--%EC%A-%--%ED%--%--
 
