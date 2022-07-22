@@ -22,18 +22,18 @@ import java.util.Objects;
  */
 @Component
 @Slf4j
-public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFilter.AuthConfig> {
+public class CustomAuthFilter extends AbstractGatewayFilterFactory<DefaultConfig> {
 
     public CustomAuthFilter(){
-        super(AuthConfig.class);
+        super(DefaultConfig.class);
     }
 
     // 사용자 로직 작성
     @Override
-    public GatewayFilter apply(AuthConfig config){
+    public GatewayFilter apply(DefaultConfig config){
         return (((exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-            log.error("Auth PreFilter");
+            log.error("Auth PreFilter message={}", config.getBaseMessage());
 
             // Request Header에 token이 존재하지 않을 때
             if ( ! request.getHeaders().containsKey("token") ){
@@ -59,9 +59,5 @@ public class CustomAuthFilter extends AbstractGatewayFilterFactory<CustomAuthFil
         log.error("Auth 401 UNAUTHORIZED Error");
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return response.setComplete();
-    }
-
-    public static class AuthConfig{
-
     }
 }

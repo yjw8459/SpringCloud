@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class OrderController {
 
-    @GetMapping("/info")
+    @GetMapping("/info")//localhpst:8081o/info
     public String info(){
         log.info("Request Order Info !!");
         return "Request Order Info!!";

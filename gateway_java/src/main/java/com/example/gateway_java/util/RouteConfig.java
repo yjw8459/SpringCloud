@@ -19,4 +19,5 @@ public class RouteConfig {
                         .uri("http://localhost:8080/user/java"))
                 .build();
     }
+
 }
